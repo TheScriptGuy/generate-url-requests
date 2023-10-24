@@ -13,6 +13,14 @@ This script is a multi-threaded URL accessor. It downloads a list of top URLs fr
 
 - `requests`
 
+## Installation
+
+Before running the script, ensure that you have the `requests` library installed in your Python environment. You can install it using `pip`:
+
+```bash
+pip install requests
+```
+
 ## Usage
 
 You can run this script from the command line using the following syntax:
