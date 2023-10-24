@@ -50,7 +50,7 @@ def make_request(hostname: str, thread_id: int) -> str:
         
         # Attempting to connect to the hostname
         try:
-            response = requests.get(f"{protocol}://{hostname}", timeout=5)
+            response = requests.get(f"{protocol}://{hostname}", verify="/usr/local/share/ca-certificates", timeout=5)
             output = f"Thread ID: {thread_id}, Hostname: {hostname}, Status Code: {response.status_code} ({response.reason})"
             print(output)
             return output
