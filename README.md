@@ -7,7 +7,7 @@ This script is a multi-threaded URL accessor. It downloads a list of top URLs fr
 - Multi-threading to speed up the checking process
 - Handles both HTTP and HTTPS protocols
 - Graceful termination upon receiving Ctrl+C
-- Option to output results to the console or a file
+- Option to output results to a file
 
 ## Dependencies
 
