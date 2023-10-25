@@ -1,6 +1,6 @@
 # Author:                   TheScriptGuy
 # Date:                     2023-10-25
-# Version:                  0.04
+# Version:                  0.05
 # Description:              ConnectionManager class used for URL connectivity operations (multithreaded)
 
 import threading
@@ -11,7 +11,7 @@ from typing import List, Optional
 
 class ConnectionManager:
     def __init__(self, num_connections: int, num_workers: int, outputfile: Optional[str]):
-        self.CLASS_VERSION = "0.04"
+        self.CLASS_VERSION = "0.05"
         self.num_connections = num_connections
         self.num_workers = num_workers
         self.outputfile = outputfile
@@ -41,7 +41,7 @@ class ConnectionManager:
             # Attempting to connect to the hostname
             try:
                 response = requests.get(f"{protocol}://{hostname}", timeout=5)
-                output = f"Thread ID: {thread_id}, Status Code: {response.status_code} ({response.reason: <20}), Hostname: {hostname}"
+                output = f"Thread ID: {thread_id}, Status Code: {response.status_code} ({response.reason: <20}), Hostname: {protocol}://{hostname}"
                 print(output)
                 return output
 

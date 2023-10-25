@@ -1,4 +1,7 @@
 # 2023-10-25
+## Version 0.05
+* Fixing minor print bug for when a site is working
+
 ## Version 0.04
 * Fixing minor print bug for `num_workers`
 
