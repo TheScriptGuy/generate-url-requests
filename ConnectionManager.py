@@ -1,6 +1,6 @@
 # Author:                   TheScriptGuy
 # Date:                     2023-10-25
-# Version:                  0.02
+# Version:                  0.03
 # Description:              ConnectionManager class used for URL connectivity operations (multithreaded)
 
 import threading
@@ -11,13 +11,23 @@ from typing import List, Optional
 
 class ConnectionManager:
     def __init__(self, num_connections: int, num_workers: int, outputfile: Optional[str]):
-        self.CLASS_VERSION = "0.02"
+        self.CLASS_VERSION = "0.03"
         self.num_connections = num_connections
         self.num_workers = num_workers
         self.outputfile = outputfile
 
+        # Print the startup metrics
+        self.print_variables()
+
         # Define a global exit event for all threads to track on.
         self.exit_event = threading.Event()
+
+    def print_variables(self) -> None:
+        """
+        Print variables.
+        """
+        print(f"Number of connections to establish = {self.num_connections}")
+        print(f"Number of workers = {self.num_workeres}")
 
     def make_request(self, hostname: str, thread_id: int) -> str:
         """
