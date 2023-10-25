@@ -1,6 +1,6 @@
 # Author:                   TheScriptGuy
-# Date:                     2023-10-24
-# Version:                  0.01
+# Date:                     2023-10-25
+# Version:                  0.02
 # Description:              ConnectionManager class used for URL connectivity operations (multithreaded)
 
 import threading
@@ -11,6 +11,7 @@ from typing import List, Optional
 
 class ConnectionManager:
     def __init__(self, num_connections: int, num_workers: int, outputfile: Optional[str]):
+        self.CLASS_VERSION = "0.02"
         self.num_connections = num_connections
         self.num_workers = num_workers
         self.outputfile = outputfile
@@ -30,13 +31,45 @@ class ConnectionManager:
             # Attempting to connect to the hostname
             try:
                 response = requests.get(f"{protocol}://{hostname}", timeout=5)
-                output = f"Thread ID: {thread_id}, Hostname: {hostname}, Status Code: {response.status_code} ({response.reason})"
+                output = f"Thread ID: {thread_id}, Status Code: {response.status_code} ({response.reason: <20}), Hostname: {hostname}"
                 print(output)
                 return output
-            except requests.exceptions.RequestException as e:
-                error_output = f"Thread ID: {thread_id}, Error connecting to {protocol}://{hostname}: {e}"
+
+            except requests.exceptions.ConnectionError as e:
+                if "Name or service not known" in str(e):
+                    error_detail = "DNS resolution issue"
+                elif "Connection refused" in str(e):
+                    error_detail = "Connection refused"
+                else:
+                    error_detail = "Connection error"
+                error_output = f"Thread ID: {thread_id}, Status Code: 000 ({error_detail: <20}), Hostname: {protocol}://{hostname}"
                 print(error_output)
-                return error_output
+
+            except requests.exceptions.ReadTimeout:
+                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Read timeout         ), Hostname: {protocol}://{hostname}"
+                print(error_output)
+
+            except requests.exceptions.TooManyRedirects:
+                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Too many redirects   ), Hostname: {protocol}://{hostname}"
+                print(error_output)
+
+            except requests.exceptions.ConnectTimeoutError:
+                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Connection Timeout   ), Hostname: {protocol}://{hostname}"
+                print(error_output)
+ 
+            except requests.exceptions.ConnectTimeout:
+                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Connection Timeout   ), Hostname: {protocol}://{hostname}"
+                print(error_output)
+
+            except requetss.exceptions.SSLError:
+                error_output = f"Thread ID: {thread_id}, Status Code: 000 (SSL Error            ), Hostname: {protocol}://{hostname}"
+               
+            except requests.exceptions.RequestException as e:
+                error_output = f"Thread ID: {thread_id}, An error occurred while connecting to {protocol}://{hostname}: {e}"
+                print(error_output)
+            
+            return error_output
+
 
     def worker(self, hostnames_queue: queue.Queue) -> None:
         """
