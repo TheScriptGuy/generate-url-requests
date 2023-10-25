@@ -1,4 +1,7 @@
 # 2023-10-25
+## Version 0.04
+* Fixing minor print bug for `num_workers`
+
 ## Version 0.03
 * Adding printing of startup variables.
 
