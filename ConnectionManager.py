@@ -69,7 +69,7 @@ class ConnectionManager:
                         # Format the result
                         output = f"Thread ID: {thread_id}, Status Code: {response.status_code} ({response.reason: <20}), Hostname: {protocol}://{hostname}"
                 elif response.status_code == 503:
-                    if "Service unavailable" in repsonse.reason:
+                    if "Service unavailable" in response.reason:
                         output = f"Thread ID: {thread_id}, Status Code: {response.status_code} (Service Unavailable), Hostname: {protocol}://{hostname}"
                 else:  # Handling other status codes here
                     output = f"Thread ID: {thread_id}, Status Code: {response.status_code} ({response.reason: <20}), Hostname: {protocol}://{hostname}"
@@ -184,14 +184,14 @@ class ConnectionManager:
         print(f"Average time: {finished_output['avg_time']}s\n")
 
         # Print headers
-        print(f"{'HTTP Response Code':<20} {'HTTP Response Reason':<20} {'Count':<10}")
+        print(f"{'HTTP Response Code':<20} {'HTTP Response Reason':<25} {'Count':<10}")
 
         # Sorting the data by count in descending order and Adding the data
         sorted_response_codes = sorted(finished_output['response_codes'].items(), key=lambda x: x[1], reverse=True)
     
         # Adding the data
         for (code, reason), count in sorted_response_codes:
-            print(f"{code:<20} {reason:<20} {count:<10}")
+            print(f"{code:03}{'':<17} {reason:<25} {count:<10}")
         #for (code, reason), count in finished_output['response_codes'].items():
         #    print(f"{code:<20} {reason:<20} {count:<10}")
 
