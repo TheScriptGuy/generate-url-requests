@@ -1,3 +1,9 @@
+# 2023-10-26
+## Version 0.06
+* Fixing logic with HTTP status codes and displaying correct errors.
+* Fixing logic with HTTPS and HTTP requests.
+* Adding a StatisticsManager class to help calculate some small statistics based off the requests.
+
 # 2023-10-25
 ## Version 0.05
 * Fixing minor print bug for when a site is working
