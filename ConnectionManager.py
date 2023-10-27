@@ -86,6 +86,11 @@ class ConnectionManager:
                 error_output = f"Thread ID: {thread_id}, Status Code: 000 ({error_detail: <20}), Hostname: {protocol}://{hostname}"
                 exception_triggered = True
 
+            except requests.exceptions.InvalidSchema:
+                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Invalid Schema       ), Hostname: {protocol}://{hostname}"
+                exception_triggered = True
+                exception_error = "Invalid Schema"
+
             except requests.exceptions.ReadTimeout:
                 error_output = f"Thread ID: {thread_id}, Status Code: 000 (Read timeout         ), Hostname: {protocol}://{hostname}"
                 exception_triggered = True
