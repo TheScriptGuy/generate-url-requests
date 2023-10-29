@@ -1,6 +1,6 @@
 # Author:                   TheScriptGuy
-# Date:                     2023-10-26
-# Version:                  0.06
+# Date:                     2023-10-29
+# Version:                  0.07
 # Description:              Generate a random number of requests to a random sample of hostsnames.
 
 import argparse

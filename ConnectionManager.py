@@ -1,6 +1,6 @@
 # Author:                   TheScriptGuy
-# Date:                     2023-10-26
-# Version:                  0.06
+# Date:                     2023-10-27
+# Version:                  0.07
 # Description:              ConnectionManager class used for URL connectivity operations (multithreaded)
 
 import threading
@@ -13,7 +13,7 @@ from datetime import datetime
 
 class ConnectionManager:
     def __init__(self, num_connections: int, num_workers: int, outputfile: Optional[str]):
-        self.CLASS_VERSION = "0.06"
+        self.CLASS_VERSION = "0.07"
         self.num_connections = num_connections
         self.num_workers = num_workers
         self.outputfile = outputfile
@@ -58,7 +58,7 @@ class ConnectionManager:
             # Attempting to connect to the hostname
             try:
                 response = requests.get(f"{protocol}://{hostname}", timeout=5)
-                
+               
                 # Lets check the HTTP Response code first.
                 if response.status_code == 400:
                     if "query parameters specified" in response.reason:
@@ -69,20 +69,18 @@ class ConnectionManager:
                         # Format the result
                         output = f"Thread ID: {thread_id}, Status Code: {response.status_code} ({response.reason: <20}), Hostname: {protocol}://{hostname}"
                 elif response.status_code == 503:
-                    if "Service unavailable" in response.reason:
-                        output = f"Thread ID: {thread_id}, Status Code: {response.status_code} (Service Unavailable), Hostname: {protocol}://{hostname}"
+                    output = f"Thread ID: {thread_id}, Status Code: {response.status_code} (Service Unavailable), Hostname: {protocol}://{hostname}"
                 else:  # Handling other status codes here
                     output = f"Thread ID: {thread_id}, Status Code: {response.status_code} ({response.reason: <20}), Hostname: {protocol}://{hostname}"
 
             except requests.exceptions.ConnectionError as e:
                 if "Name or service not known" in str(e):
                     error_detail = "DNS resolution issue"
-                    break
                 elif "Connection refused" in str(e):
                     error_detail = "Connection refused"
                 else:
                     error_detail = "Connection error"
-                
+               
                 error_output = f"Thread ID: {thread_id}, Status Code: 000 ({error_detail: <20}), Hostname: {protocol}://{hostname}"
                 exception_triggered = True
 
@@ -105,7 +103,7 @@ class ConnectionManager:
                 error_output = f"Thread ID: {thread_id}, Status Code: 000 (Connection Timeout   ), Hostname: {protocol}://{hostname}"
                 exception_triggered = True
                 exception_error = "Connection Timeout"
- 
+
             except requests.exceptions.ConnectTimeout:
                 error_output = f"Thread ID: {thread_id}, Status Code: 000 (Connection Timeout   ), Hostname: {protocol}://{hostname}"
                 exception_triggered = True
@@ -115,19 +113,16 @@ class ConnectionManager:
                 if protocol == 'https':  # If HTTPS fails due to SSLError, let it retry with HTTP
                     error_output = f"Thread ID: {thread_id}, Status Code: 000 (SSL Error            ), Hostname: {protocol}://{hostname}"
                     continue
-                #exception_triggered = True
-                #exception_error = "SSL Error"
-               
             except requests.exceptions.RequestException as e:
                 error_output = f"Thread ID: {thread_id}, An error occurred while connecting to {protocol}://{hostname}: {e}"
                 exception_triggered = True
 
             end_time = datetime.now()  # Stop the timer
-            
+           
             if not exception_triggered:
                 # Calculate the response time
                 response_time = end_time - start_time
-                
+               
                 # Update the statistics
                 self.statistics_manager.add_data(hostname, response.status_code, response.reason, response_time)
             else:
@@ -135,7 +130,7 @@ class ConnectionManager:
                 self.statistics_manager.add_data(hostname, 0, error_detail or exception_error, response_time)
                 exception_error = ""
                 exception_triggered = False
-                
+
             # Store the output to return after the loop ends
             final_output = output or error_output
 
@@ -175,31 +170,6 @@ class ConnectionManager:
         print("Exiting due to Ctrl+C")
         self.exit_event.set()
 
-    def print_statistics(self) -> None:
-        """
-        Print the statistics for user friendly output.
-        """
-        print("-" * 30)
-        print("Statistics:")
-        finished_output = self.statistics_manager.calculate_statistics()
-
-        # Formatting the output
-        print(f"Minimum time: {finished_output['min_time']}s")
-        print(f"Maximum time: {finished_output['max_time']}s")
-        print(f"Average time: {finished_output['avg_time']}s\n")
-
-        # Print headers
-        print(f"{'HTTP Response Code':<20} {'HTTP Response Reason':<25} {'Count':<10}")
-
-        # Sorting the data by count in descending order and Adding the data
-        sorted_response_codes = sorted(finished_output['response_codes'].items(), key=lambda x: x[1], reverse=True)
-    
-        # Adding the data
-        for (code, reason), count in sorted_response_codes:
-            print(f"{code:03}{'':<17} {reason:<25} {count:<10}")
-        #for (code, reason), count in finished_output['response_codes'].items():
-        #    print(f"{code:<20} {reason:<20} {count:<10}")
-
     def main(self, __random_hostnames) -> None:
         """
         Main function to execute the multi-threaded connection script.
@@ -226,4 +196,4 @@ class ConnectionManager:
                 t.join()
 
         print("All worker threads have completed.")
-        self.print_statistics()
+        self.statistics_manager.print_statistics()

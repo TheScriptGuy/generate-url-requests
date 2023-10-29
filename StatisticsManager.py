@@ -1,5 +1,6 @@
 from typing import List, Tuple, Dict
 from datetime import timedelta
+from HttpStatusCodes import HttpStatusCode
 
 class StatisticsManager:
     """
@@ -10,6 +11,9 @@ class StatisticsManager:
         """
         Initializes a new instance of StatisticsManager.
         """
+        # Define the class version
+
+        self.CLASS_VERSION = "0.01"
         # A list of tuples to store hostname, response code, response reason, and response time
         self._data: List[Tuple[str, int, str, timedelta]] = []
 
@@ -87,3 +91,33 @@ class StatisticsManager:
             'avg_time': f_avg_time,  # Average response time
             'response_codes': response_codes  # Count of each unique HTTP response code and message
         }
+
+    def print_statistics(self) -> None:
+        """
+        Print the statistics for user friendly output.
+        """
+        print("-" * 30)
+        print("Statistics:")
+        finished_output = self.calculate_statistics()
+
+        # Formatting the output
+        print(f"Minimum time: {finished_output['min_time']}s")
+        print(f"Maximum time: {finished_output['max_time']}s")
+        print(f"Average time: {finished_output['avg_time']}s\n")
+
+        # Print headers
+        print(f"{'HTTP Response Code':<30}{'Count':<10}")
+
+        # Collating the counts of each unique HTTP response code
+        collated_counts = {}
+        for (code, _), count in finished_output['response_codes'].items():
+            if code not in collated_counts:
+                collated_counts[code] = 0
+            collated_counts[code] += count
+
+        # Sorting the collated counts in descending order
+        sorted_collated_counts = sorted(collated_counts.items(), key=lambda x: x[1], reverse=True)
+
+        # Printing the sorted, collated counts
+        for code, count in sorted_collated_counts:
+            print(f"{code:03} - {HttpStatusCode.get_status_message(code):<24}{count:<10}")

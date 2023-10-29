@@ -1,4 +1,8 @@
 # 2023-10-26
+## Version 0.07
+* Adding a Statistics calcuation at the end.
+* Adding a HttpStatusCodes class to help with error code output.
+
 ## Version 0.06
 * Fixing logic with HTTP status codes and displaying correct errors.
 * Fixing logic with HTTPS and HTTP requests.
