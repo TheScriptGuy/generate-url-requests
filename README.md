@@ -8,6 +8,7 @@ This script is a multi-threaded URL accessor. It downloads a list of top URLs fr
 - Handles both HTTP and HTTPS protocols
 - Graceful termination upon receiving Ctrl+C
 - Option to output results to a file
+- Allow insecure connections
 
 ## Dependencies
 
@@ -26,10 +27,18 @@ pip install requests
 You can run this script from the command line using the following syntax:
 
 ```bash
-$ python generate-requests.py [num_connections] [num_workers] [--outputfile OUTPUTFILE]
+$ python generate-requests.py [num_connections] [num_workers] [--outputfile OUTPUTFILE] [--insecure]
 ```
 
 # Establishing 200 connections using 20 worker threads, with output saved to output.txt
+(as a side note here, unless you have a fairly resource friendly host to run this on, this could very quickly exhaust all resources on the server, or make too many DNS requests to your DNS providers.
 ```bash
-$ python script_name.py 200 20 --outputfile output.txt
+$ python generate-requests.py 200 20 --outputfile output.txt
 ```
+
+# To establish an insecure connection
+(To allow certificate warnings - useful for when you do not have the correct certificates installed.)
+```bash
+$ python generate-requests.py 200 20 --outputfile output.txt --insecure
+```
+

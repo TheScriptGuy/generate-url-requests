@@ -1,3 +1,8 @@
+# 2023-11-08
+## Version 0.08
+* Changing default workers from 10 to 3.
+* Adding an `--insecure` argument to allow for insecure connections.
+
 # 2023-10-26
 ## Version 0.07
 * Adding a Statistics calcuation at the end.

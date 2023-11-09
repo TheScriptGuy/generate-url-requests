@@ -1,22 +1,25 @@
 # Author:                   TheScriptGuy
-# Date:                     2023-10-27
-# Version:                  0.07
+# Date:                     2023-11-08
+# Version:                  0.08
 # Description:              ConnectionManager class used for URL connectivity operations (multithreaded)
 
 import threading
 import queue
 import signal
 import requests
+from urllib3.exceptions import InsecureRequestWarning
+
 from typing import List, Optional
 from StatisticsManager import StatisticsManager
 from datetime import datetime
 
 class ConnectionManager:
-    def __init__(self, num_connections: int, num_workers: int, outputfile: Optional[str]):
-        self.CLASS_VERSION = "0.07"
+    def __init__(self, num_connections: int, num_workers: int, outputfile: Optional[str], secure = True):
+        self.CLASS_VERSION = "0.08"
         self.num_connections = num_connections
         self.num_workers = num_workers
         self.outputfile = outputfile
+        self.secure = secure
 
         # Print the startup metrics
         self.print_variables()
@@ -33,6 +36,7 @@ class ConnectionManager:
         """
         print(f"Number of connections to establish = {self.num_connections}")
         print(f"Number of workers = {self.num_workers}")
+        print(f"Secure/Verify Conections = {self.secure}")
 
     def make_request(self, hostname: str, thread_id: int) -> str:
         """
@@ -40,6 +44,10 @@ class ConnectionManager:
         """
 
         final_output = ""  # Variable to store the final output
+
+        # Suppress only the single warning from urllib3 needed.
+        if not self.secure:
+            requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
         protocols = ['https', 'http']
         for protocol in protocols:
@@ -57,7 +65,7 @@ class ConnectionManager:
 
             # Attempting to connect to the hostname
             try:
-                response = requests.get(f"{protocol}://{hostname}", timeout=5)
+                response = requests.get(f"{protocol}://{hostname}", timeout=5, verify=self.secure)
                
                 # Lets check the HTTP Response code first.
                 if response.status_code == 400:
