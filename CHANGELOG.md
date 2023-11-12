@@ -1,3 +1,7 @@
+# 2023-11-11
+## Version 0.10
+* Fixing [traceback errors](https://github.com/TheScriptGuy/generate-url-requests/issues/1)
+
 # 2023-11-09
 ## Version 0.09
 * Adding a dedicated ThreadManager class to align with better coding practices.

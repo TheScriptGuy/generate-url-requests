@@ -1,6 +1,6 @@
 # Author:                   TheScriptGuy
 # Date:                     2023-11-10
-# Version:                  0.09
+# Version:                  0.10
 # Description:              ConnectionManager class used for URL connectivity operations (multithreaded)
 
 import requests
@@ -11,7 +11,7 @@ from typing import List, Optional
 
 class ConnectionManager:
     def __init__(self, secure = True):
-        self.CLASS_VERSION = "0.09"
+        self.CLASS_VERSION = "0.10"
         self.secure = secure
 
         # Print the startup metrics
@@ -89,15 +89,25 @@ class ConnectionManager:
                 exception_triggered = True
                 exception_error = "Too many redirects"
 
-            except requests.exceptions.ConnectTimeoutError:
-                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Connection Timeout   ), Hostname: {protocol}://{hostname}"
-                exception_triggered = True
-                exception_error = "Connection Timeout"
-
             except requests.exceptions.ConnectTimeout:
                 error_output = f"Thread ID: {thread_id}, Status Code: 000 (Connection Timeout   ), Hostname: {protocol}://{hostname}"
                 exception_triggered = True
                 exception_error = "Connection Timeout"
+
+            except requests.exceptions.ChunkedEncodingError:
+                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Chunk Encoding Error ), Hostname {protocol}://{hostname}"
+                exception_triggered = True
+                exception_error = "Chunked Encoding Error"
+
+            except requests.exceptions.ConnectTimeout:
+                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Connection Timeout   ), Hostname: {protocol}://{hostname}"
+                exception_triggered = True
+                exception_error = "Connection Timeout"            
+
+            except urllib3.exceptions.ProtocolError:
+                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Protocol Error       ), Hostname: {protocol}://{hostname}"
+                exception_triggered = True
+                exception_error = "Protocol Error"
 
             except requetss.exceptions.SSLError:
                 if protocol == 'https':  # If HTTPS fails due to SSLError, let it retry with HTTP
