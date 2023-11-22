@@ -1,18 +1,24 @@
 # Author:                   TheScriptGuy
 # Date:                     2023-11-10
-# Version:                  0.09
+# Version:                  0.10
 # Description:              ConnectionManager class used for URL connectivity operations (multithreaded)
-
 import requests
-from urllib3.exceptions import InsecureRequestWarning
+from urllib3.exceptions import InsecureRequestWarning, NewConnectionError, MaxRetryError
 from datetime import datetime
-
-from typing import List, Optional
+from typing import Dict, Optional
 
 class ConnectionManager:
-    def __init__(self, secure = True):
-        self.CLASS_VERSION = "0.09"
+    def __init__(self, 
+                secure: bool = True,
+                use_proxy: bool = False,
+                proxy_settings: Optional[Dict[str, str]] = None,
+                http_headers: Optional[Dict[str, str]] = None
+                ):
+        self.CLASS_VERSION = "0.10"
         self.secure = secure
+        self.use_proxy = use_proxy
+        self.proxy_settings = proxy_settings if use_proxy else None
+        self.http_headers = http_headers or {}
 
         # Print the startup metrics
         self.print_variables()
@@ -21,7 +27,7 @@ class ConnectionManager:
         """
         Print variables.
         """
-        print(f"Secure/Verify Conections = {self.secure}")
+        print(f"Secure/Verify Connections = {self.secure}, Use Proxy = {self.use_proxy}, Proxy Settings = {self.proxy_settings}, HTTP Headers = {self.http_headers}")
 
     def make_request(self, hostname: str, thread_id: int, statistics_manager) -> str:
         """
@@ -47,7 +53,15 @@ class ConnectionManager:
 
             # Attempting to connect to the hostname
             try:
-                response = requests.get(f"{protocol}://{hostname}", timeout=5, verify=self.secure)
+                request_kwargs = {
+                    "timeout": 5,
+                    "verify": self.secure,
+                    "headers": self.http_headers
+                }
+
+                if self.use_proxy and self.proxy_settings:
+                    request_kwargs["proxies"] = self.proxy_settings
+                response = requests.get(f"{protocol}://{hostname}", **request_kwargs)
 
                 # Lets check the HTTP Response code first.
                 if response.status_code == 400:
@@ -89,20 +103,26 @@ class ConnectionManager:
                 exception_triggered = True
                 exception_error = "Too many redirects"
 
-            except requests.exceptions.ConnectTimeoutError:
-                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Connection Timeout   ), Hostname: {protocol}://{hostname}"
-                exception_triggered = True
-                exception_error = "Connection Timeout"
-
+#            except requests.exceptions.ConnectTimeoutError:
+#                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Connection Timeout   ), Hostname: {protocol}://{hostname}"
+#                exception_triggered = True
+#                exception_error = "Connection Timeout"
+#
             except requests.exceptions.ConnectTimeout:
                 error_output = f"Thread ID: {thread_id}, Status Code: 000 (Connection Timeout   ), Hostname: {protocol}://{hostname}"
                 exception_triggered = True
                 exception_error = "Connection Timeout"
 
-            except requetss.exceptions.SSLError:
+            except requests.exceptions.SSLError:
                 if protocol == 'https':  # If HTTPS fails due to SSLError, let it retry with HTTP
                     error_output = f"Thread ID: {thread_id}, Status Code: 000 (SSL Error            ), Hostname: {protocol}://{hostname}"
                     continue
+
+            # Additional exception handling for proxy errors
+            except (NewConnectionError, MaxRetryError) as e:
+                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Proxy Connection Error), Hostname: {protocol}://{hostname}"
+                exception_triggered = True
+
             except requests.exceptions.RequestException as e:
                 error_output = f"Thread ID: {thread_id}, An error occurred while connecting to {protocol}://{hostname}: {e}"
                 exception_triggered = True
@@ -132,3 +152,6 @@ class ConnectionManager:
                 break
 
         return final_output
+
+# Example usage:
+# connection_manager = ConnectionManager(secure=True, use_proxy=True, proxy_settings={"https_proxy": "proxyhostname:8080", "http_proxy": "proxyhostname1:8080", "username": "myusername", "password": "mypassword"}, http_headers={"User-Agent": "MyCustomAgent"})

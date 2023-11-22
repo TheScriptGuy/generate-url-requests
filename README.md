@@ -40,3 +40,27 @@ $ python generate-requests.py 200 20
 ```bash
 $ python generate-requests.py 200 20 --insecure
 ```
+
+# Using a web proxy
+First edit the `generate-requests-proxy.py` file and adjust the proxy_settings variable:
+```python
+# Define a proxy setting
+proxy_settings = {
+    "https": "http://proxy1.domain.com:8080",
+    "http": "http://proxy1.domain.com:8080"
+}
+```
+
+```bash
+$ python generate-requests-proxy.py 200 20
+```
+
+# Configuring custom HTTP Headers
+Edit either the `generate-requests-proxy.py` or `generate-requests.py` and set http_headers appropriately.
+```python
+# Custom HTTP Headers
+http_headers = {
+    "X-Authenticated-User": "",
+    "User-Agent": "MyTestUserAgent/1.0"
+}
+```

@@ -1,3 +1,8 @@
+# 2023-11-22
+## Version 0.10
+* Adding web proxy support.
+* Adding HTTP header support.
+
 # 2023-11-09
 ## Version 0.09
 * Adding a dedicated ThreadManager class to align with better coding practices.
