@@ -1,5 +1,5 @@
 # Author:                   TheScriptGuy
-# Date:                     2023-11-10
+# Date:                     2023-11-22
 # Version:                  0.10
 # Description:              ConnectionManager class used for URL connectivity operations (multithreaded)
 import requests
@@ -103,17 +103,22 @@ class ConnectionManager:
                 exception_triggered = True
                 exception_error = "Too many redirects"
 
-#            except requests.exceptions.ConnectTimeoutError:
-#                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Connection Timeout   ), Hostname: {protocol}://{hostname}"
-#                exception_triggered = True
-#                exception_error = "Connection Timeout"
-#
+            except requests.exceptions.ChunkedEncodingError:
+                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Chunk Encoding Error ), Hostname {protocol}://{hostname}"
+                exception_triggered = True
+                exception_error = "Chunked Encoding Error"
+
             except requests.exceptions.ConnectTimeout:
                 error_output = f"Thread ID: {thread_id}, Status Code: 000 (Connection Timeout   ), Hostname: {protocol}://{hostname}"
                 exception_triggered = True
-                exception_error = "Connection Timeout"
+                exception_error = "Connection Timeout"            
 
-            except requests.exceptions.SSLError:
+            except urllib3.exceptions.ProtocolError:
+                error_output = f"Thread ID: {thread_id}, Status Code: 000 (Protocol Error       ), Hostname: {protocol}://{hostname}"
+                exception_triggered = True
+                exception_error = "Protocol Error"
+
+            except requetss.exceptions.SSLError:
                 if protocol == 'https':  # If HTTPS fails due to SSLError, let it retry with HTTP
                     error_output = f"Thread ID: {thread_id}, Status Code: 000 (SSL Error            ), Hostname: {protocol}://{hostname}"
                     continue
@@ -152,6 +157,3 @@ class ConnectionManager:
                 break
 
         return final_output
-
-# Example usage:
-# connection_manager = ConnectionManager(secure=True, use_proxy=True, proxy_settings={"https_proxy": "proxyhostname:8080", "http_proxy": "proxyhostname1:8080", "username": "myusername", "password": "mypassword"}, http_headers={"User-Agent": "MyCustomAgent"})
