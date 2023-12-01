@@ -1,3 +1,7 @@
+# 2023-11-30
+# Version 0.11
+* Created a messages queue to help with displaying output to stdout.
+
 # 2023-11-11
 ## Version 0.10
 * Fixing [traceback errors](https://github.com/TheScriptGuy/generate-url-requests/issues/1)

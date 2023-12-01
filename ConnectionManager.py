@@ -135,7 +135,7 @@ class ConnectionManager:
             final_output = output or error_output
 
             # Display the output or error_output.
-            print(final_output)
+            #print(final_output)
 
             # If it is a successful HTTPS request, no need to try HTTP
             if output:

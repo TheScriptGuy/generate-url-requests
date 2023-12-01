@@ -1,6 +1,6 @@
 # Author:                   TheScriptGuy
-# Date:                     2023-11-11
-# Version:                  0.10
+# Date:                     2023-12-01
+# Version:                  0.11
 # Description:              Generate a random number of requests to a random sample of hostnames.
 
 import argparse
@@ -10,6 +10,7 @@ from FileManager import FileManager
 from ConnectionManager import ConnectionManager
 from ThreadManager import ThreadManager
 from StatisticsManager import StatisticsManager
+from MessageManager import MessageManager
 
 from datetime import datetime, timedelta
 
@@ -47,16 +48,21 @@ if __name__ == '__main__':
     # Define a statistics_manager object
     statistics_manager = StatisticsManager()
 
+    # Define a message_manager object.
+    message_manager = MessageManager()
+
     # Define a thread_manager object.
-    thread_manager = ThreadManager(args.num_workers, connection_manger.make_request, statistics_manager)
+    thread_manager = ThreadManager(args.num_workers, connection_manger.make_request, statistics_manager, message_manager)
 
     # Create the queues and threads to work through.
     thread_manager.start(file_manager.random_sample, "hostnames_queue", "hostnames_thread_list")
 
     # Wait until all the threads have finished.
-    thread_manager.join_threads()
+    thread_manager.join_threads("hostnames_thread_list")
 
     print("All worker threads have completed.")
-
+    
+    thread_manager.message_manager.message_exit_event = True
+    
     # Print the statistics from all the work that has been done.
     statistics_manager.print_statistics()
