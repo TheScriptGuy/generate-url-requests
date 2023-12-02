@@ -70,7 +70,7 @@ if __name__ == '__main__':
     thread_manager.start(file_manager.random_sample, "hostnames_queue", "hostnames_thread_list")
 
     # Wait until all the threads have finished.
-    thread_manager.join_threads()
+    thread_manager.join_threads("hostnames_thread_list")
 
     print("All worker threads have completed.")
 
