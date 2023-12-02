@@ -1,5 +1,6 @@
 # Author:                   TheScriptGuy
-# Date:                     2023-12-01
+# Date:                     2023-11-22
+# Version:                  0.01
 # Description:              Generate a random number of requests to a random sample of hostnames.
 
 import argparse
@@ -41,6 +42,12 @@ if __name__ == '__main__':
     # Get a random sample based off the number of connections we need to establish
     file_manager.get_random_sample(args.num_connections)
 
+    # Define a proxy setting
+    proxy_settings = {
+        "https": "http://proxy1.domain.com:8080",
+        "http": "http://proxy1.domain.com:8080"
+    }
+
     # Custom HTTP Headers
     http_headers = {
         "X-Authenticated-User": "",
@@ -48,7 +55,7 @@ if __name__ == '__main__':
     }
 
     # Define a connection_manager object.
-    connection_manger = ConnectionManager(secure=not(args.insecure), http_headers=http_headers)
+    connection_manger = ConnectionManager(secure=not(args.insecure), use_proxy = True, proxy_settings=proxy_settings, http_headers=http_headers)
 
     # Define a statistics_manager object
     statistics_manager = StatisticsManager()
@@ -63,11 +70,12 @@ if __name__ == '__main__':
     thread_manager.start(file_manager.random_sample, "hostnames_queue", "hostnames_thread_list")
 
     # Wait until all the threads have finished.
-    thread_manager.join_threads("hostnames_thread_list")
+    thread_manager.join_threads()
 
     print("All worker threads have completed.")
-    
+
+    # Set the message_manager exit event
     thread_manager.message_manager.message_exit_event = True
-    
+
     # Print the statistics from all the work that has been done.
     statistics_manager.print_statistics()
