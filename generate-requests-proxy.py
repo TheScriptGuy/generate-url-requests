@@ -1,6 +1,6 @@
 # Author:                   TheScriptGuy
-# Date:                     2023-11-22
-# Version:                  0.01
+# Date:                     2025-01-03
+# Version:                  0.02
 # Description:              Generate a random number of requests to a random sample of hostnames.
 
 import argparse
@@ -21,7 +21,21 @@ if __name__ == '__main__':
     parser.add_argument('num_workers', type=int, nargs='?', default=3, help='Number of worker threads. Default 3.')
     parser.add_argument('--insecure', action='store_true', help='Allow insecure connections.')
 
+    # Add delay argument group (mutually exclusive)
+    delay_group = parser.add_mutually_exclusive_group()
+    delay_group.add_argument('--delay', type=int, help='Constant delay in seconds (0-10) before each request.')
+    delay_group.add_argument('--random-delay', type=int, dest='random_delay_max',
+                           help='Random delay between 0 and specified seconds (max 10) before each request.')
+
     args = parser.parse_args()
+
+    # Add validation for delay arguments
+    if args.delay is not None and (args.delay < 0 or args.delay > 10):
+        print("Error: Delay must be between 0 and 10 seconds")
+        sys.exit(1)
+    if args.random_delay_max is not None and (args.random_delay_max < 0 or args.random_delay_max > 10):
+        print("Error: Random delay maximum must be between 0 and 10 seconds")
+        sys.exit(1)
 
     if args.cleanup:
         FileManager.cleanup_files(["top-1m.csv", "top-1m.csv.zip"])
@@ -55,7 +69,14 @@ if __name__ == '__main__':
     }
 
     # Define a connection_manager object.
-    connection_manger = ConnectionManager(secure=not(args.insecure), use_proxy = True, proxy_settings=proxy_settings, http_headers=http_headers)
+    connection_manger = ConnectionManager(
+            secure=not(args.insecure),
+            use_proxy=True,
+            proxy_settings=proxy_settings,
+            http_headers=http_headers
+            delay=args.delay,
+            random_delay_max=args.random_delay_max
+    )
 
     # Define a statistics_manager object
     statistics_manager = StatisticsManager()

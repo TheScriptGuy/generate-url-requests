@@ -1,3 +1,7 @@
+# 2025-01-03
+## Version 0.12
+* Added `--random-delay` and `--delay` arguments to simulate "more" real-world type traffic and "bursty" type traffic.
+
 # 2023-12-01
 # Version 0.11
 * Created a messages queue to help with displaying output to stdout.

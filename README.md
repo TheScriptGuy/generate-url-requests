@@ -8,6 +8,7 @@ This script is a multi-threaded URL accessor. It downloads a list of top URLs fr
 - Handles both HTTPS (preferred) and HTTP protocols
 - Graceful termination upon receiving Ctrl+C
 - Allow insecure connections
+- Allow fixed delays or random delays for each worker thread.
 
 ## Dependencies
 
@@ -64,3 +65,20 @@ http_headers = {
     "User-Agent": "MyTestUserAgent/1.0"
 }
 ```
+
+# Adding delays to requests
+## To add a fixed delay
+Use the `--delay` argument to indicate a fixed amount of time (in seconds) that a worker thread will pause before requesting a URL.
+In this example, it'll establish 100 connections to URLs using 20 workers with a fixed 5 second delay between each request.
+```bash
+$ python generate-requests.py --delay 5 100 20
+```
+
+## To add a random delay
+Use the `--random-delay` argument to indicate a random amount of time (in seconds) that a worker thread will pause before requesting a URL.
+In this example, it'll establish 100 connections to URLs using 20 workers with a random delay of up to 10 seconds.
+```bash
+$ python generate-requests.py --random-delay 10 100 20
+```
+
+
