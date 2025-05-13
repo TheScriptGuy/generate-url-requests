@@ -145,6 +145,16 @@ class ConnectionManager:
                 exception_triggered = True
                 exception_error = "Protocol Error"
 
+            except urllib3.exceptions.DecodeError:
+                error_output = f"{thread_info}, SC: 000 (Decode Error         ), Hostname: {protocol}://{hostname}"
+                exception_triggered = True
+                exception_error = "Decode Error"
+
+            except requests.exceptions.ContentDecodingError:
+                error_output = f"{thread_info}, SC: 000 (Content Decode Error ), Hostname: {protocol}://{hostname}"
+                exception_triggered = True
+                exception_error = "Content Decode Error"
+
             except requetss.exceptions.SSLError:
                 if protocol == 'https':  # If HTTPS fails due to SSLError, let it retry with HTTP
                     error_output = f"{thread_info}, SC: 000 (SSL Error            ), Hostname: {protocol}://{hostname}"
