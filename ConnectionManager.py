@@ -155,6 +155,11 @@ class ConnectionManager:
                 exception_triggered = True
                 exception_error = "Content Decode Error"
 
+            except urllib3.exceptions.LocationParseError:
+                error_output = f"{thread_info}, SC: 000 (Location Parse Error ), Hostname: {protocol}://{hostname}"
+                exception_triggered = True
+                exception_error = "Location Parse Error"
+
             except requetss.exceptions.SSLError:
                 if protocol == 'https':  # If HTTPS fails due to SSLError, let it retry with HTTP
                     error_output = f"{thread_info}, SC: 000 (SSL Error            ), Hostname: {protocol}://{hostname}"
