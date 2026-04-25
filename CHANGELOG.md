@@ -1,3 +1,7 @@
+# 2026-04-26
+## Version 0.13
+* Removed the logic for downloading yesterday's data and instead download the latest file available from the S3 bucket.
+
 # 2025-01-03
 ## Version 0.12
 * Added `--random-delay` and `--delay` arguments to simulate "more" real-world type traffic and "bursty" type traffic.

@@ -1,5 +1,5 @@
 # Author:                   TheScriptGuy
-# Date:                     2023-10-24
+# Date:                     2026-04-26
 # Version:                  0.01
 # Description:              FileManager class used for file operations
 
@@ -12,9 +12,9 @@ import zipfile
 
 
 class FileManager:
-    def __init__(self, __date: str):
-        self.CLASS_VERSION = "0.01"
-        self.url = f"http://s3-us-west-1.amazonaws.com/umbrella-static/top-1m-{__date}.csv.zip"
+    def __init__(self):
+        self.CLASS_VERSION = "0.02"
+        self.url = f"http://s3-us-west-1.amazonaws.com/umbrella-static/top-1m.csv.zip"
         self.zip_path = "top-1m.csv.zip"
         self.response = None
         self.hostnames = []
@@ -57,7 +57,7 @@ class FileManager:
             print(f"Downloaded zip file is not a zip file.")
             sys.exit(1)
 
-    def download_and_extract_file(self, date: str) -> None:
+    def download_and_extract_file(self) -> None:
         """
         Download and extract the ZIP file containing hostnames.
         """

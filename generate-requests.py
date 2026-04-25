@@ -41,14 +41,11 @@ if __name__ == '__main__':
         FileManager.cleanup_files(["top-1m.csv", "top-1m.csv.zip"])
         sys.exit(0)
 
-    # Work out what yesterday's date was.
-    yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
-
     # Define a file_manager object based off yesterday's date
-    file_manager = FileManager(yesterday)
+    file_manager = FileManager()
 
     # Download and extract the csv file from Umbrella
-    file_manager.download_and_extract_file(yesterday)
+    file_manager.download_and_extract_file()
 
     # Load the csv into memory
     file_manager.load_csv()
